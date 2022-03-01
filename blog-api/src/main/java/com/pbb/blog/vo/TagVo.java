@@ -9,9 +9,7 @@ import lombok.Data;
  */
 @Data
 public class TagVo {
-    private int id;
+    private Long id;
 
-    private int artical_id;
-
-    private int tag_id;
+    private String tagName;
 }

@@ -37,8 +37,65 @@ public class ArticleServiceImpl implements ArticleService {
      */
     @Override
     public Result listArticles(PageParams pageParams) {
+        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        //是否置顶进行排序,  时间倒序进行排列相当于order by create_data desc
+        queryWrapper.orderByDesc(Article::getWeight,Article::getCreateDate);
+        Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
 
-        return null;
+        //分页查询用法 https://blog.csdn.net/weixin_41010294/article/details/105726879
+        List<Article> records = articlePage.getRecords();
+
+        // 要返回我们定义的vo数据，就是对应的前端数据，不应该只返回现在的数据需要进一步进行处理
+        List<ArticleVo> articleVoList =copyList(records,true,true);
+        
+        return Result.success(articleVoList);
+        
+    }
+    
+/**
+ * @Author pbb
+ * @description :
+ * @date 2022/3/1 21:07
+ * @Param [records, isTag, isAuthor]
+ * @return java.util.List<com.pbb.blog.vo.ArticleVo>
+ **/
+    private List<ArticleVo> copyList(List<Article> records,boolean isTag,boolean isAuthor) {
+
+        List<ArticleVo> articleVoList = new ArrayList<>();
+
+        for (Article record : records) {
+            articleVoList.add(copy(record,isTag,isAuthor));
+        }
+        return articleVoList;
+
+    }
+/**
+ * @Author pbb
+ * @description : //"eop的作用是对应copyList，集合之间的copy分解成集合元素之间的copy
+ * @date 2022/3/1 21:12
+ * @Param [article, isTag, isAuthor]
+ * @return com.pbb.blog.vo.ArticleVo
+ **/
+
+    private ArticleVo copy(Article article, boolean isTag, boolean isAuthor){
+        ArticleVo articleVo = new ArticleVo();
+        //BeanUtils.copyProperties用法   https://blog.csdn.net/Mr_linjw/article/details/50236279
+        BeanUtils.copyProperties(article, articleVo);
+        articleVo.setCreateDate(new DateTime(article.getCreateDate()).toString("yyyy-MM-dd HH:mm"));
+        //并不是所有的接口都需要标签和作者信息
+        if(isTag){
+            Long articleId = article.getId();
+            articleVo.setTags(tagsService.findTagsByArticleId(articleId));
+        }
+        if (isAuthor) {
+            //拿到作者id
+            Long authorId = article.getAuthorId();
+
+            articleVo.setAuthor(sysUserService.findUserById(authorId).getNickname());
+        }
+        return articleVo;
+
     }
 
 
@@ -68,36 +125,8 @@ public class ArticleServiceImpl implements ArticleService {
         return Result.success(articleVoList);
     }*/
 
-/*    private List<ArticleVo> copyList(List<Article> records,boolean isTag,boolean isAuthor) {
 
-        List<ArticleVo> articleVoList = new ArrayList<>();
 
-        for (Article record : records) {
-            articleVoList.add(copy(record,isTag,isAuthor));
-        }
-        return articleVoList;
 
-    }*/
-
-/*    //"eop的作用是对应copyList，集合之间的copy分解成集合元素之间的copy
-    private ArticleVo copy(Article article, boolean isTag, boolean isAuthor){
-        ArticleVo articleVo = new ArticleVo();
-        //BeanUtils.copyProperties用法   https://blog.csdn.net/Mr_linjw/article/details/50236279
-        BeanUtils.copyProperties(article, articleVo);
-        articleVo.setCreateDate(new DateTime(article.getCreateDate()).toString("yyyy-MM-dd HH:mm"));
-        //并不是所有的接口都需要标签和作者信息
-        if(isTag){
-            Long articleId = article.getId();
-            articleVo.setTags(tagsService.findTagsByArticleId(articleId));
-        }
-        if (isAuthor) {
-            //拿到作者id
-            Long authorId = article.getAuthorId();
-
-            articleVo.setAuthor(sysUserService.findUserById(authorId).getNickname());
-        }
-        return articleVo;
-
-    }*/
 
 }
