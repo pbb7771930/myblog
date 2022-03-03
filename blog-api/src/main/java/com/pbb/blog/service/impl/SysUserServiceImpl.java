@@ -4,12 +4,14 @@ import com.pbb.blog.dao.mapper.SysUserMapper;
 import com.pbb.blog.dao.pojo.SysUser;
 import com.pbb.blog.service.SysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * @author: admin
  * @date: 2022/3/1 10:45
  * @description:
  */
+@Service
 public class SysUserServiceImpl implements SysUserService {
     @Autowired
     private SysUserMapper sysUserMapper;

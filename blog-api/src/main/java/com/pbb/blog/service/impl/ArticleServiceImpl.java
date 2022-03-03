@@ -3,10 +3,11 @@ package com.pbb.blog.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.pbb.blog.dao.mapper.ArticleMapper;
+import com.pbb.blog.dao.mapper.ArticleTagMapper;
 import com.pbb.blog.dao.pojo.Article;
 import com.pbb.blog.service.ArticleService;
 import com.pbb.blog.service.SysUserService;
-import com.pbb.blog.service.TagsService;
+import com.pbb.blog.service.TagService;
 import com.pbb.blog.vo.ArticleVo;
 import com.pbb.blog.vo.Result;
 import com.pbb.blog.vo.params.PageParams;
@@ -28,6 +29,14 @@ public class ArticleServiceImpl implements ArticleService {
     @Autowired
     private ArticleMapper articleMapper;
 
+    @Autowired
+    private TagService tagService;
+
+    @Autowired
+    private SysUserService sysUserService;
+
+    @Autowired
+    private ArticleTagMapper articleTagMapper;
     /*
      * @param pageParams:
      * @return: com.pbb.blog.vo.Result
@@ -86,7 +95,7 @@ public class ArticleServiceImpl implements ArticleService {
         //并不是所有的接口都需要标签和作者信息
         if(isTag){
             Long articleId = article.getId();
-            articleVo.setTags(tagsService.findTagsByArticleId(articleId));
+            articleVo.setTags(tagService.findTagsByArticleId(articleId));
         }
         if (isAuthor) {
             //拿到作者id

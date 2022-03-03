@@ -26,11 +26,8 @@ public class ArticleController {
      * @date: 2022/3/1 11:21
      * @description: 首页文章列表
      */
-    @PostMapping
-    public Result listArticle(@RequestBody PageParams pageParams) {
-        //ArticleVo 页面接收的数据
-        List<ArticleVo> articles = articleService.listArticlesPage(pageParams);
-
-        return articleService.listArticlesPage(pageParams);
+    @PostMapping("listArchives")
+    public Result listArchives(PageParams pageParams){
+        return articleService.listArticles(pageParams);
     }
 }

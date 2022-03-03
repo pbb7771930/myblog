@@ -2,10 +2,11 @@ package com.pbb.blog.service.impl;
 
 import com.pbb.blog.dao.mapper.TagMapper;
 import com.pbb.blog.dao.pojo.Tag;
-import com.pbb.blog.service.TagsService;
+import com.pbb.blog.service.TagService;
 import com.pbb.blog.vo.TagVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +16,11 @@ import java.util.List;
  * @date: 2022/3/1 10:45
  * @description:
  */
-public class TagsServiceImpl implements TagsService {
+@Service
+public class TagsServiceImpl implements TagService {
     @Autowired
     private TagMapper tagMapper;
+
 
     /**
      * ms_article_tag是文章和标签的关联表
