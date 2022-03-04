@@ -1,33 +1,83 @@
 package com.pbb.blog.controller;
 
+import com.pbb.blog.common.aop.LogAnnotation;
+import com.pbb.blog.common.cache.Cache;
 import com.pbb.blog.service.ArticleService;
-import com.pbb.blog.vo.ArticleVo;
 import com.pbb.blog.vo.Result;
+import com.pbb.blog.vo.params.ArticleParam;
 import com.pbb.blog.vo.params.PageParams;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-//Json数据交互
+//json数据进行交互
 @RestController
 @RequestMapping("articles")
 public class ArticleController {
+
     @Autowired
     private ArticleService articleService;
+    /**
+     * 首页 文章列表
+     * @param pageParams
+     * @return
+     */
+    @PostMapping
+    //加上此注解 代表要对此接口记录日志
+    @LogAnnotation(module="文章",operator="获取文章列表")
+    @Cache(expire = 5 * 60 * 1000,name = "listArticle")
+    public Result listArticle(@RequestBody PageParams pageParams){
+//        int i = 10/0;
+        return articleService.listArticle(pageParams);
+    }
 
     /**
-     * @param pageParams:
-     * @return: com.pbb.blog.vo.Result
-     * @author: admin
-     * @date: 2022/3/1 11:21
-     * @description: 首页文章列表
+     * 首页 最热文章
+     * @return
+     */
+    @PostMapping("hot")
+    @Cache(expire = 5 * 60 * 1000,name = "hot_article")
+    public Result hotArticle(){
+        int limit = 5;
+        return articleService.hotArticle(limit);
+    }
+
+    /**
+     * 首页 最新文章
+     * @return
+     */
+    @PostMapping("new")
+    @Cache(expire = 5 * 60 * 1000,name = "news_article")
+    public Result newArticles(){
+        int limit = 5;
+        return articleService.newArticles(limit);
+    }
+
+    /**
+     * 首页 文章归档
+     * @return
      */
     @PostMapping("listArchives")
-    public Result listArchives(PageParams pageParams){
-        return articleService.listArticles(pageParams);
+    public Result listArchives(){
+        return articleService.listArchives();
+    }
+
+
+    @PostMapping("view/{id}")
+    @Cache(expire = 5 * 60 * 1000,name = "view_article")
+    public Result findArticleById(@PathVariable("id") Long articleId){
+        return articleService.findArticleById(articleId);
+    }
+    //接口url：/articles/publish
+    //
+    //请求方式：POST
+    @PostMapping("publish")
+    public Result publish(@RequestBody ArticleParam articleParam){
+
+        return articleService.publish(articleParam);
+    }
+
+    @PostMapping("{id}")
+    public Result articleById(@PathVariable("id") Long articleId){
+        return articleService.findArticleById(articleId);
     }
 }

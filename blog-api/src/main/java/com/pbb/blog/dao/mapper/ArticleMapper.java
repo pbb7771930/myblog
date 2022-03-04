@@ -1,14 +1,22 @@
 package com.pbb.blog.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.pbb.blog.dao.dos.Archives;
 import com.pbb.blog.dao.pojo.Article;
 
-/**
- * @author: admin
- * @date: 2022/3/1 10:45
- * @description:
- */
-//BaseMapper为mybatisplus提供的接口
+import java.util.List;
+
 public interface ArticleMapper extends BaseMapper<Article> {
 
+
+    List<Archives> listArchives();
+
+
+    IPage<Article> listArticle(Page<Article> page,
+                               Long categoryId,
+                               Long tagId,
+                               String year,
+                               String month);
 }
